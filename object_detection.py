@@ -195,18 +195,19 @@ def main():
     # Clean existing folders and files
     if os.path.exists(frames_path):
         shutil.rmtree(frames_path)
-        if save_images:
-            os.mkdir(frames_path)
-    
+        
     if os.path.exists(output_path):
+        shutil.rmtree("Results")
         shutil.rmtree(output_path)
-        if save_images:
-            os.mkdir("Results")
-            os.mkdir(output_path)
-
+            
     if os.path.exists("model_detections.db"):    
         os.remove("model_detections.db")
     
+    # Create frames and prediction folders
+    if save_images:
+            os.mkdir(frames_path)
+            os.mkdir("Results")
+            os.mkdir(output_path)
     
     # Load a YOLOv8 model
     # We'll use the models trained on COCO dataset : https://docs.ultralytics.com/models/yolov8
