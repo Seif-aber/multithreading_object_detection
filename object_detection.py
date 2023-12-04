@@ -28,11 +28,11 @@ def read_frames(video_path, save_images):
     cap.release()
 
 # Function for object detection 
-def perform_object_detection(frame_info, save_images):
+def perform_object_detection(model, frame_info, save_images):
     if save_images:
         im_path = os.path.join(frames_path, frame_info[1])
         # Set verbose = False to hide prediction details
-        detections =  model.predict(source=im_path, save=True, project="Results", name="Images", exist_ok=True, verbose = True)[0].boxes
+        detections =  model.predict(source=im_path, save=True, project="Results", name = "Images", exist_ok=True, verbose = True)[0].boxes
     else:
         detections =  model.predict(source=frame_info[-1], save=False, verbose = True)[0].boxes
     # Since the model prediction gives lot of information, we choose : classes, confidences and bounding boxes details
@@ -45,12 +45,12 @@ def perform_object_detection(frame_info, save_images):
     
 
 # Function to perform object detection and put results into the detection results queue (Thread 2)
-def detect_objects(save_images):   
+def detect_objects(model, save_images):   
     while True:
         frame_info = frame_queue.get()
         if frame_info is None:
             break
-        result = perform_object_detection(frame_info, save_images)
+        result = perform_object_detection(model, frame_info, save_images)
         new_frame_info = (frame_info[0], frame_info[1], result) # we save id, image_name and detections
         detection_results_queue.put(new_frame_info)
     
@@ -125,7 +125,7 @@ def get_id(filename):
 
 # Additional function to create output video from the output images
 def create_output_video(frames_folder, video_name):
-    # Sort frames by id
+
     frame_files = sorted(os.listdir(frames_folder), key=get_id)
 
     # Get dimensions from the first image
@@ -147,7 +147,7 @@ def create_output_video(frames_folder, video_name):
 def main():
     
     # Global variables that will be used by the different threads
-    global frame_queue, detection_results_queue, model, frames_path, output_path, nb_frames, fps, db_lock
+    global frame_queue, detection_results_queue, frames_path, output_path, nb_frames, fps, db_lock
     
     # Script arguments
     parser = argparse.ArgumentParser(description='Run an object detection model on a video')
@@ -155,7 +155,7 @@ def main():
     parser.add_argument('--m', help='Path of the Yolov8 model', default='Models/yolov8n.pt')
     parser.add_argument('--f', action='store_true', help='Save frames and predicted images', default=False)
     parser.add_argument('--s', action='store_true', help='Save the result video', default=False)
-    parser.add_argument('--c', action='store_true', help='Save the db to a csv file', default=False)
+    parser.add_argument('--c', action='store_true', help='Save the db in a csv file', default=False)
 
     args = parser.parse_args()
 
@@ -170,7 +170,6 @@ def main():
         print("Video not found!")
         return 
 
-    
     # We set save_images = True if we want to create the video
     if save_video:
         save_images = True
@@ -189,22 +188,22 @@ def main():
     output_path = "Results/Images"
 
 
-    # Clean existing folders
+
+    # Clean existing folders and files
     if os.path.exists(frames_path):
         shutil.rmtree(frames_path)
-    if os.path.exists("Results"):
-        shutil.rmtree("Results")
+        if save_images:
+            os.mkdir(frames_path)
+    
+    if os.path.exists(output_path):
+        shutil.rmtree(output_path)
+        if save_images:
+            os.mkdir("Results")
+            os.mkdir(output_path)
+
     if os.path.exists("model_detections.db"):    
         os.remove("model_detections.db")
     
-    if save_images:
-        # Create folders to save video frames and predictions
-        if not os.path.exists(frames_path):
-            os.mkdir(frames_path)
-
-        if not os.path.exists(output_path):
-            os.mkdir("Results")
-            os.mkdir(output_path)
     
     # Load a YOLOv8 model
     # We'll use the models trained on COCO dataset : https://docs.ultralytics.com/models/yolov8
@@ -237,7 +236,7 @@ def main():
     thread_read_frames = threading.Thread(target=read_frames, args=(video_path,save_images))
     thread_read_frames.start()
 
-    thread_detect_objects = threading.Thread(target=detect_objects, args=(save_images,))
+    thread_detect_objects = threading.Thread(target=detect_objects, args=(model, save_images))
     thread_detect_objects.start()
     
     thread_insert_into_db = threading.Thread(target=insert_into_database)
@@ -266,4 +265,4 @@ def main():
         print(f"Video {result_video_name} saved successfully!")
 
 if __name__=="__main__":
-    main()  
+    main() 
