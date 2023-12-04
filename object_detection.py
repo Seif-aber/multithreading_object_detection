@@ -125,7 +125,7 @@ def get_id(filename):
 
 # Additional function to create output video from the output images
 def create_output_video(frames_folder, video_name):
-
+    # Sort frames by id
     frame_files = sorted(os.listdir(frames_folder), key=get_id)
 
     # Get dimensions from the first image
