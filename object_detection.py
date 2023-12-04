@@ -198,7 +198,6 @@ def main():
         
     if os.path.exists(output_path):
         shutil.rmtree("Results")
-        shutil.rmtree(output_path)
             
     if os.path.exists("model_detections.db"):    
         os.remove("model_detections.db")
