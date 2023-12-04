@@ -165,9 +165,12 @@ def main():
     save_video = args.s
     save_csv = args.c
 
-    # Exit if the video's path is incorrect
+    # Exit if the video's path or model's path is incorrect
     if not os.path.exists(video_path):
         print("Video not found!")
+        return 
+    if not os.path.exists(model_path):
+        print("Model not found!")
         return 
 
     # We set save_images = True if we want to create the video
