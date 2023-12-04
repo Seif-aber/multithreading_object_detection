@@ -29,5 +29,5 @@ python object_detection.py --v Videos/sample_video.mp4
 ```
 - Specify a custom Yolov8 model and save frames/predicted images along with the resulting video :
 ```bash
-python object_detection.py --v videos/sample_video.mp4 --m Models/custom_yolov8.pt --f --s
+python object_detection.py --v Videos/sample_video.mp4 --m Models/custom_yolov8.pt --f --s
 ```
