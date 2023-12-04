@@ -1,5 +1,5 @@
-opencv_contrib_python==4.8.1.78
-opencv_python==4.8.1.78
-opencv_python_headless==4.8.1.78
-pandas==2.0.2
-ultralytics==8.0.221
+opencv_contrib_python
+opencv_python
+opencv_python_headless
+pandas
+ultralytics
