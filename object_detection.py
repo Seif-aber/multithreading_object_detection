@@ -120,27 +120,28 @@ def save_db_csv(db_path):
 
 
 
-
+def get_id(filename):
+    return int(filename.split('_')[1].split('.')[0])
 
 # Additional function to create output video from the output images
 def create_output_video(frames_folder, video_name):
 
-  frame_files = sorted(os.listdir(frames_folder))
+    frame_files = sorted(os.listdir(frames_folder), key=get_id)
 
-  # Get dimensions from the first image
-  first_frame = cv2.imread(os.path.join(frames_folder, frame_files[0]))
-  height, width, _ = first_frame.shape
+    # Get dimensions from the first image
+    first_frame = cv2.imread(os.path.join(frames_folder, frame_files[0]))
+    height, width, _ = first_frame.shape
 
-  fourcc = cv2.VideoWriter_fourcc(*'mp4v')  
-  frame_per_sec = fps 
-  video = cv2.VideoWriter(video_name, fourcc, frame_per_sec, (width, height))
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  
+    frame_per_sec = fps 
+    video = cv2.VideoWriter(video_name, fourcc, frame_per_sec, (width, height))
 
-  # Write frames to the video
-  for frame_file in frame_files:
-      frame = cv2.imread(os.path.join(frames_folder, frame_file))
-      video.write(frame)
+    # Write frames to the video
+    for frame_file in frame_files:
+        frame = cv2.imread(os.path.join(frames_folder, frame_file))
+        video.write(frame)
 
-  video.release()
+    video.release()
 
 
 def main():
