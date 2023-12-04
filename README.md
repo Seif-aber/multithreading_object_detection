@@ -20,7 +20,7 @@ python object_detection.py --v /path/to/video/file --m /path/to/Yolov8/model --f
 - `--m`: Path of the Yolov8 model (default: `Models/yolov8n.pt`).
 - `--f`: Save frames and predicted images (optional, default: `False`).
 - `--s`: Save the result video (optional, default: `False`).
-- `--c`: Save the database to a csv file.
+- `--c`: Save the database to a csv file (optional, default: `False`).
 
 ## Examples
 - Detect objects in a video using the default Yolov8 model :
